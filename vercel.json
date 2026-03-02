@@ -1,7 +1,9 @@
 {
-  "functions": {
-    "api/advise.py": {
-      "maxDuration": 30
-    }
-  }
+  "builds": [
+    { "src": "api/advise.py", "use": "@vercel/python" }
+  ],
+  "routes": [
+    { "src": "/api/advise", "dest": "/api/advise.py" },
+    { "src": "/(.*)", "dest": "/public/$1" }
+  ]
 }
