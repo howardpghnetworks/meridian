@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/advise.py": {
+      "maxDuration": 30
+    }
+  }
+}
