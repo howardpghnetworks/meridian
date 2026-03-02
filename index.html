@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meridian — Microsoft 365 Licensing Advisor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    :root {
+      --bg:          #0f1117;
+      --surface:     #1a1f2e;
+      --surface2:    #222840;
+      --border:      #2d3450;
+      --text:        #e8eaf0;
+      --text-sub:    #8892a4;
+      --blue:        #0971ce;
+      --blue-hover:  #0860b5;
+      --blue-dim:    rgba(9,113,206,0.12);
+      --green:       #32b561;
+      --green-dim:   rgba(50,181,97,0.12);
+      --grey:        #d7d7d7;
+      --chip-bg:     #1e2438;
+      --chip-hover:  #262d46;
+      --chip-active: rgba(9,113,206,0.18);
+      --chip-border: #2d3450;
+      --shadow:      0 4px 24px rgba(0,0,0,0.4);
+      --radius:      12px;
+      --radius-sm:   8px;
+    }
+    [data-theme="light"] {
+      --bg:          #f0f4f8;
+      --surface:     #ffffff;
+      --surface2:    #f8fafc;
+      --border:      #e2e8f0;
+      --text:        #0f1117;
+      --text-sub:    #64748b;
+      --blue:        #0971ce;
+      --blue-hover:  #0860b5;
+      --blue-dim:    rgba(9,113,206,0.08);
+      --green:       #28a355;
+      --green-dim:   rgba(40,163,85,0.10);
+      --chip-bg:     #f1f5f9;
+      --chip-hover:  #e8eef5;
+      --chip-active: rgba(9,113,206,0.10);
+      --chip-border: #dde3eb;
+      --shadow:      0 2px 16px rgba(0,0,0,0.08);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background 0.2s, color 0.2s;
+      line-height: 1.6;
+    }
+
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 32px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+    }
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-svg { width: 36px; height: 36px; flex-shrink: 0; }
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+    .brand-pgh {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--blue);
+      text-transform: uppercase;
+    }
+    .brand-networks {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      color: var(--text-sub);
+      text-transform: uppercase;
+    }
+    .divider-vert {
+      width: 1px;
+      height: 28px;
+      background: var(--border);
+    }
+    .app-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .app-tag {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-sub);
+      letter-spacing: 0.04em;
+    }
+
+    .header-right { display: flex; align-items: center; gap: 12px; }
+
+    .theme-toggle {
+      background: var(--chip-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 14px;
+      cursor: pointer;
+      color: var(--text-sub);
+      font-size: 13px;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+      font-weight: 500;
+    }
+    .theme-toggle:hover { border-color: var(--blue); color: var(--text); }
+    .theme-icon { font-size: 14px; }
+
+    /* ── MAIN ── */
+    main {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    .hero { text-align: center; margin-bottom: 44px; }
+    .hero h1 {
+      font-size: clamp(26px, 4vw, 36px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+    .hero h1 span { color: var(--blue); }
+    .hero p {
+      font-size: 16px;
+      color: var(--text-sub);
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* ── INPUT CARD ── */
+    .input-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      margin-bottom: 28px;
+    }
+
+    .input-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-sub);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    textarea {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 15px;
+      line-height: 1.6;
+      padding: 14px 16px;
+      resize: vertical;
+      min-height: 110px;
+      transition: border-color 0.15s;
+      outline: none;
+    }
+    textarea::placeholder { color: var(--text-sub); }
+    textarea:focus { border-color: var(--blue); }
+
+    .chips-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-sub);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin: 20px 0 10px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      background: var(--chip-bg);
+      border: 1px solid var(--chip-border);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-sub);
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .chip:hover { background: var(--chip-hover); color: var(--text); border-color: var(--blue); }
+    .chip.active {
+      background: var(--chip-active);
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    .submit-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 24px;
+      gap: 12px;
+    }
+    .submit-hint { font-size: 12px; color: var(--text-sub); }
+
+    .btn-analyze {
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 12px 28px;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s, transform 0.1s;
+      letter-spacing: -0.01em;
+    }
+    .btn-analyze:hover:not(:disabled) { background: var(--blue-hover); }
+    .btn-analyze:active:not(:disabled) { transform: scale(0.98); }
+    .btn-analyze:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-arrow { transition: transform 0.2s; }
+    .btn-analyze:not(:disabled):hover .btn-arrow { transform: translateX(3px); }
+
+    /* ── STATUS ── */
+    .status-bar {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 20px;
+      background: var(--blue-dim);
+      border: 1px solid rgba(9,113,206,0.25);
+      border-radius: var(--radius-sm);
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: var(--blue);
+      font-weight: 500;
+    }
+    .status-bar.visible { display: flex; }
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(9,113,206,0.3);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── RESULT CARD ── */
+    .result-card {
+      display: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .result-card.visible { display: block; }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      background: var(--green-dim);
+      border-bottom: 1px solid rgba(50,181,97,0.2);
+    }
+    .result-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--green);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .badge-dot {
+      width: 8px; height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+    }
+    .badge-dot.pulsing {
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .btn-copy {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-sub);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+      display: none;
+    }
+    .btn-copy.visible { display: flex; align-items: center; gap: 5px; }
+    .btn-copy:hover { border-color: var(--blue); color: var(--blue); }
+
+    .result-body {
+      padding: 28px;
+      min-height: 80px;
+    }
+
+    /* markdown styles */
+    .result-body h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
+    .result-body h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 22px 0 8px;
+    }
+    .result-body p {
+      font-size: 15px;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+    .result-body strong { color: var(--text); font-weight: 600; }
+    .result-body ul {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 12px;
+    }
+    .result-body ul li {
+      font-size: 14px;
+      color: var(--text);
+      padding: 5px 0 5px 18px;
+      position: relative;
+      border-bottom: 1px solid var(--border);
+    }
+    .result-body ul li:last-child { border-bottom: none; }
+    .result-body ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 12px;
+      width: 6px;
+      height: 6px;
+      background: var(--blue);
+      border-radius: 50%;
+    }
+    .result-body hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 20px 0;
+    }
+    .result-body em { color: var(--text-sub); font-style: italic; }
+
+    .cursor-blink {
+      display: inline-block;
+      width: 2px;
+      height: 16px;
+      background: var(--blue);
+      margin-left: 2px;
+      vertical-align: middle;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 12px;
+      color: var(--text-sub);
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--blue); text-decoration: none; }
+
+    @media (max-width: 600px) {
+      header { padding: 14px 18px; }
+      main { padding: 28px 16px 60px; }
+      .submit-row { flex-direction: column; align-items: stretch; }
+      .btn-analyze { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo-wrap">
+      <!-- PGH Networks radar logo -->
+      <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="44" fill="none" stroke="#0971ce" stroke-width="7"/>
+        <line x1="14" y1="50" x2="86" y2="50" stroke="#0971ce" stroke-width="6" stroke-linecap="round"/>
+        <path d="M 33 50 A 17 14 0 0 1 67 50" fill="none" stroke="#32b561" stroke-width="5.5" stroke-linecap="round"/>
+        <path d="M 22 50 A 28 22 0 0 1 78 50" fill="none" stroke="#32b561" stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M 33 50 A 17 14 0 0 0 67 50" fill="none" stroke="#32b561" stroke-width="5.5" stroke-linecap="round"/>
+        <path d="M 22 50 A 28 22 0 0 0 78 50" fill="none" stroke="#32b561" stroke-width="4.5" stroke-linecap="round"/>
+      </svg>
+      <div class="brand-text">
+        <span class="brand-pgh">PGH</span>
+        <span class="brand-networks">Networks</span>
+      </div>
+    </div>
+    <div class="divider-vert"></div>
+    <div>
+      <div class="app-name">Meridian</div>
+      <div class="app-tag">M365 Licensing Advisor</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+      <span class="theme-icon" id="themeIcon">☀️</span>
+      <span id="themeLabel">Light</span>
+    </button>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <h1>Find the right <span>Microsoft 365</span> license.<br/>Instantly.</h1>
+    <p>Describe your organization's needs and get a precise, current recommendation — powered by live licensing data.</p>
+  </div>
+
+  <div class="input-card">
+    <div class="input-label">Describe Your Requirements</div>
+    <textarea
+      id="needsInput"
+      placeholder="e.g. We need desktop Office apps, Exchange email, endpoint protection, and mobile device management for a 45-person company. We're also looking at Intune for device management and need single sign-on."
+      rows="4"
+    ></textarea>
+
+    <div class="chips-label">Quick Add — Common Requirements</div>
+    <div class="chips" id="chipsContainer">
+      <span class="chip" data-value="Desktop Office apps (Word, Excel, PowerPoint, Outlook)">Desktop Office Apps</span>
+      <span class="chip" data-value="Business email and calendar (Exchange Online)">Business Email</span>
+      <span class="chip" data-value="Endpoint protection and EDR security (Defender for Business)">Endpoint Security (EDR)</span>
+      <span class="chip" data-value="Mobile device management (Microsoft Intune)">Device Management (Intune)</span>
+      <span class="chip" data-value="Advanced identity and access management (Entra ID P1)">Identity &amp; SSO (Entra ID)</span>
+      <span class="chip" data-value="Email security and anti-phishing (Defender for Office 365)">Email Security</span>
+      <span class="chip" data-value="Teams calling and collaboration">Teams + Calling</span>
+      <span class="chip" data-value="Compliance, eDiscovery, and data governance">Compliance &amp; eDiscovery</span>
+      <span class="chip" data-value="Organization is under 300 users (SMB)">Under 300 Users</span>
+      <span class="chip" data-value="Enterprise organization over 300 users">Enterprise (300+)</span>
+      <span class="chip" data-value="US Government Cloud (GCC or GCC High)">Government (GCC)</span>
+      <span class="chip" data-value="Education institution (A-SKU licensing)">Education</span>
+    </div>
+
+    <div class="submit-row">
+      <span class="submit-hint">Searches live Microsoft licensing data before advising</span>
+      <button class="btn-analyze" id="analyzeBtn" onclick="analyze()">
+        Analyze Requirements
+        <span class="btn-arrow">→</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="status-bar" id="statusBar">
+    <div class="spinner" id="spinner"></div>
+    <span id="statusText">Searching…</span>
+  </div>
+
+  <div class="result-card" id="resultCard">
+    <div class="result-header">
+      <div class="result-badge">
+        <div class="badge-dot" id="badgeDot"></div>
+        Meridian Recommendation
+      </div>
+      <button class="btn-copy" id="copyBtn" onclick="copyResult()">
+        <span>⎘</span> Copy
+      </button>
+    </div>
+    <div class="result-body" id="resultBody"></div>
+  </div>
+</main>
+
+<footer>
+  Powered by <a href="https://pghnetworks.com" target="_blank">PGH Networks</a> · Live data via Tavily · Analysis by Claude Haiku via Hatz AI
+</footer>
+
+<script>
+  const selectedChips = new Set();
+  let rawMarkdown = '';
+
+  // chip toggle
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('active');
+      const val = chip.dataset.value;
+      if (chip.classList.contains('active')) selectedChips.add(val);
+      else selectedChips.delete(val);
+    });
+  });
+
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('themeIcon').textContent = isDark ? '🌙' : '☀️';
+    document.getElementById('themeLabel').textContent = isDark ? 'Dark' : 'Light';
+  }
+
+  function setStatus(text) {
+    const bar = document.getElementById('statusBar');
+    document.getElementById('statusText').textContent = text;
+    bar.classList.add('visible');
+  }
+
+  function hideStatus() {
+    document.getElementById('statusBar').classList.remove('visible');
+  }
+
+  async function analyze() {
+    const needs = document.getElementById('needsInput').value.trim();
+    const chips = Array.from(selectedChips);
+
+    if (!needs && chips.length === 0) {
+      document.getElementById('needsInput').focus();
+      return;
+    }
+
+    const btn = document.getElementById('analyzeBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<div style="width:14px;height:14px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite"></div> Analyzing…';
+
+    // reset result
+    rawMarkdown = '';
+    const resultCard = document.getElementById('resultCard');
+    const resultBody = document.getElementById('resultBody');
+    const copyBtn = document.getElementById('copyBtn');
+    const badgeDot = document.getElementById('badgeDot');
+
+    resultCard.classList.remove('visible');
+    resultBody.innerHTML = '';
+    copyBtn.classList.remove('visible');
+    badgeDot.classList.remove('pulsing');
+
+    setStatus('Searching current Microsoft 365 licensing data…');
+
+    try {
+      const resp = await fetch('/api/advise', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ needs, chips }),
+      });
+
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+      resultCard.classList.add('visible');
+      badgeDot.classList.add('pulsing');
+      resultBody.innerHTML = '<span class="cursor-blink"></span>';
+
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop();
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          try {
+            const event = JSON.parse(line.slice(6));
+
+            if (event.type === 'status') {
+              setStatus(event.text);
+            } else if (event.type === 'chunk') {
+              rawMarkdown += event.text;
+              resultBody.innerHTML = marked.parse(rawMarkdown) + '<span class="cursor-blink"></span>';
+              resultBody.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } else if (event.type === 'done') {
+              resultBody.innerHTML = marked.parse(rawMarkdown);
+              badgeDot.classList.remove('pulsing');
+              copyBtn.classList.add('visible');
+              hideStatus();
+            } else if (event.type === 'error') {
+              resultBody.innerHTML = `<p style="color:#e55;">⚠ ${event.text}</p>`;
+              badgeDot.classList.remove('pulsing');
+              hideStatus();
+            }
+          } catch {}
+        }
+      }
+
+    } catch (err) {
+      setStatus('');
+      hideStatus();
+      document.getElementById('resultCard').classList.add('visible');
+      document.getElementById('resultBody').innerHTML = `<p style="color:#e55;">⚠ Connection error: ${err.message}</p>`;
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = 'Analyze Requirements <span class="btn-arrow">→</span>';
+  }
+
+  function copyResult() {
+    navigator.clipboard.writeText(rawMarkdown).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.innerHTML = '<span>✓</span> Copied!';
+      setTimeout(() => { btn.innerHTML = '<span>⎘</span> Copy'; }, 2000);
+    });
+  }
+
+  // allow Enter+Ctrl or Enter+Cmd to submit
+  document.getElementById('needsInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) analyze();
+  });
+</script>
+</body>
+</html>
