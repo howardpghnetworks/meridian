@@ -1,6 +1,6 @@
 {
   "builds": [
-    { "src": "api/advise.py", "use": "@vercel/python" },
+    { "src": "api/advise.py", "use": "@vercel/python", "config": { "maxDuration": 60 } },
     { "src": "index.html", "use": "@vercel/static" }
   ],
   "routes": [
