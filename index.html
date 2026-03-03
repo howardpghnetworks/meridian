@@ -604,41 +604,38 @@
       badgeDot.classList.add('pulsing');
       resultBody.innerHTML = '<span class="cursor-blink"></span>';
 
-      const reader = resp.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = '';
+      // Vercel buffers the full response — read it all at once then parse events
+      const text = await resp.text();
+      const lines = text.split('\n');
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        try {
+          const event = JSON.parse(line.slice(6));
 
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop();
+          if (event.type === 'status') {
+            setStatus(event.text);
+          } else if (event.type === 'chunk') {
+            rawMarkdown += event.text;
+          } else if (event.type === 'done') {
+            resultBody.innerHTML = marked.parse(rawMarkdown);
+            badgeDot.classList.remove('pulsing');
+            copyBtn.classList.add('visible');
+            hideStatus();
+          } else if (event.type === 'error') {
+            resultBody.innerHTML = `<p style="color:#e55;">⚠ ${event.text}</p>`;
+            badgeDot.classList.remove('pulsing');
+            hideStatus();
+          }
+        } catch {}
+      }
 
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue;
-          try {
-            const event = JSON.parse(line.slice(6));
-
-            if (event.type === 'status') {
-              setStatus(event.text);
-            } else if (event.type === 'chunk') {
-              rawMarkdown += event.text;
-              resultBody.innerHTML = marked.parse(rawMarkdown) + '<span class="cursor-blink"></span>';
-              resultBody.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            } else if (event.type === 'done') {
-              resultBody.innerHTML = marked.parse(rawMarkdown);
-              badgeDot.classList.remove('pulsing');
-              copyBtn.classList.add('visible');
-              hideStatus();
-            } else if (event.type === 'error') {
-              resultBody.innerHTML = `<p style="color:#e55;">⚠ ${event.text}</p>`;
-              badgeDot.classList.remove('pulsing');
-              hideStatus();
-            }
-          } catch {}
-        }
+      // Fallback: if done event was missing but we got chunks
+      if (rawMarkdown && !copyBtn.classList.contains('visible')) {
+        resultBody.innerHTML = marked.parse(rawMarkdown);
+        badgeDot.classList.remove('pulsing');
+        copyBtn.classList.add('visible');
+        hideStatus();
       }
 
     } catch (err) {
