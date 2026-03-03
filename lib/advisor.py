@@ -107,20 +107,17 @@ def stream_recommendation(user_needs: str, chips: list[str]) -> Generator[str, N
             timeout=30,
         )
 
+        # Hatz AI streams raw JSON lines: {"message": "...", "type": "content"}
         for line in resp.iter_lines():
             if not line:
                 continue
             text = line.decode("utf-8") if isinstance(line, bytes) else line
-            if not text.startswith("data: "):
-                continue
-            payload = text[6:]
-            if payload.strip() == "[DONE]":
-                break
             try:
-                chunk = json.loads(payload)
-                content = chunk.get("choices", [{}])[0].get("delta", {}).get("content", "")
-                if content:
-                    yield json.dumps({"type": "chunk", "text": content})
+                chunk = json.loads(text)
+                if chunk.get("type") == "content":
+                    content = chunk.get("message", "")
+                    if content:
+                        yield json.dumps({"type": "chunk", "text": content})
             except json.JSONDecodeError:
                 continue
 
